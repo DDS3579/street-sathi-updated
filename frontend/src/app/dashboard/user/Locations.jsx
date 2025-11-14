@@ -26,14 +26,14 @@ export default function Locations() {
               <MapPin className="h-5 w-5 text-primary" />
               <div>
                 <p className="font-medium">Home</p>
-                <p className="text-sm text-muted-foreground">123, Connaught Place, Delhi</p>
+                <p className="text-sm text-muted-foreground"></p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 border rounded-lg">
               <MapPin className="h-5 w-5 text-primary" />
               <div>
                 <p className="font-medium">Work</p>
-                <p className="text-sm text-muted-foreground">45, Karol Bagh, Delhi</p>
+                <p className="text-sm text-muted-foreground"></p>
               </div>
             </div>
           </div>
