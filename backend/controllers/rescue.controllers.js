@@ -29,6 +29,7 @@ export const createRescueRequest = async (req, res) => {
       { $push: { requests: newReport._id } },
       { new: true }
     );
+    const io = req.app.get("io");
 
     io.to("rescuers").emit("newRescueRequest", newReport);
 

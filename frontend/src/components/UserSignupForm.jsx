@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import API from "@/services/api";
 import {
   Card,
   CardContent,
@@ -11,11 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 export function UserSignupForm({ className, ...props }) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,32 +58,28 @@ export function UserSignupForm({ className, ...props }) {
     setIsSubmitting(true);
     const loadingToast = toast.loading("Creating your account...");
 
-    setTimeout(() => {
-      const userData = {
-        ...formData,
+    try {
+      const response = await API.post("/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
         role: "user",
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-      };
-      console.log("User registered:", userData);
+      });
 
-      localStorage.setItem("pendingVerificationEmail", formData.email);
+      toast.success("Account created!", {
+        id: loadingToast,
+        description: `Enter your OTP.`,
+        duration: 10000,
+      });
 
-      toast.success(
-        "Account created successfully! Redirecting to Verification.",
-        {
-          id: loadingToast,
-          description: "Please check your email for OTP.",
-          duration: 3000,
-        }
-      );
+      localStorage.setItem("pendingEmail", formData.email);
+      navigate("/otp"); // ✅ This will work if route exists
 
-      setTimeout(() => {
-        navigate("/verify-otp");
-      }, 2000);
-
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   return (

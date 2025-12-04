@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
+import RedirectBackend from "./pages/ext-home";
 import DashboardLayout from "./app/dashboard/layout";
 import Admin from "./app/dashboard/admin/Admin";
 import User from "./app/dashboard/user/User";
@@ -28,6 +30,7 @@ import RegisterUser from "./auth/RegisterUser";
 import RegisterRescuer from "./auth/RegisterRescuer";
 import OTPPage from "./auth/OTPPage";
 import "./App.css";
+import { ExternalLink } from "lucide-react";
 
 function RoleRedirect() {
   const { user } = useAuth();
@@ -37,11 +40,19 @@ function RoleRedirect() {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      {/* Temporary Path for Hackathon fix later on */}
+      <Route
+        path="/"
+        element={<RedirectBackend />}
+      />
+      {/* Temporary Path end */}
+
+      {/* <Route path="/" element={<Landing />} /> */}
       <Route path="/login" element={<Login />} />
       <Route path="/registerUser" element={<RegisterUser />} />
       <Route path="/registerRescuer" element={<RegisterRescuer />} />
       <Route path="/verify-otp" element={<OTPPage />} />
+      <Route path="/otp" element={<OTPPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<RoleRedirect />} />

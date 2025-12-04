@@ -3,7 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-
+import API from "@/services/api";
+import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -102,7 +103,12 @@ const mockRequests = [
 export default function User() {
   const { user, logout } = useAuth();
   const auth = useSelector((state) => state.auth);
-  const [requests, setRequests] = useState(mockRequests);
+  const [requests, setRequests] = useState([]);
+  const [stats, setStats] = useState({
+    activeRequests: 0,
+    completedRequests: 0,
+    totalRequests: 0,
+  });
 
   const [showNewRequest, setShowNewRequest] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -111,6 +117,52 @@ export default function User() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [urgency, setUrgency] = useState("medium");
+
+  // const handleCreateRequest = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!requestType || !location) {
+  //     toast.error("Please fill in all required fields");
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+  //   const loadingToast = toast.loading("Submitting your request...");
+
+  //   setTimeout(() => {
+  //     const newRequest = {
+  //       id: `#REQ-2024-${Date.now().toString().slice(-4)}`,
+  //       type: requestType,
+  //       location: location,
+  //       status: "pending",
+  //       assignedTo: "Not yet assigned",
+  //       created: "Just now",
+  //       priority: urgency,
+  //     };
+
+  //     setRequests([newRequest, ...requests]);
+  //     setShowNewRequest(false);
+  //     setIsSubmitting(false);
+
+  //     mockStats.activeRequests += 1;
+  //     mockStats.totalRequests += 1;
+
+  //     setRequestType("");
+  //     setLocation("");
+  //     setDescription("");
+  //     setUrgency("medium");
+
+  //     toast.success("Request submitted successfully!", {
+  //       id: loadingToast,
+  //       description: "A rescuer will be assigned to you shortly",
+  //       duration: 4000,
+  //       action: {
+  //         label: "View",
+  //         onClick: () => console.log("View request"),
+  //       },
+  //     });
+  //   }, 2000);
+  // };
 
   const handleCreateRequest = async (e) => {
     e.preventDefault();
@@ -123,39 +175,55 @@ export default function User() {
     setIsSubmitting(true);
     const loadingToast = toast.loading("Submitting your request...");
 
-    setTimeout(() => {
-      const newRequest = {
-        id: `#REQ-2024-${Date.now().toString().slice(-4)}`,
-        type: requestType,
-        location: location,
-        status: "pending",
-        assignedTo: "Not yet assigned",
-        created: "Just now",
-        priority: urgency,
-      };
+    try {
+      // This is a simplified version - adapt to your backend
+      const formData = new FormData();
+      formData.append("animalType", requestType);
+      formData.append("lat", "27.7172"); // Get real coords
+      formData.append("long", "85.3240");
+      formData.append("urgencyState", urgency);
 
-      setRequests([newRequest, ...requests]);
-      setShowNewRequest(false);
-      setIsSubmitting(false);
-
-      mockStats.activeRequests += 1;
-      mockStats.totalRequests += 1;
-
-      setRequestType("");
-      setLocation("");
-      setDescription("");
-      setUrgency("medium");
+      const response = await API.post("/rescue/create", formData);
 
       toast.success("Request submitted successfully!", {
         id: loadingToast,
         description: "A rescuer will be assigned to you shortly",
         duration: 4000,
-        action: {
-          label: "View",
-          onClick: () => console.log("View request"),
-        },
       });
-    }, 2000);
+
+      // Refresh requests
+      fetchDashboardData();
+      setShowNewRequest(false);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to submit");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchDashboardData();
+    }
+  }, [user?.id]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [allRes, activeRes, completedRes] = await Promise.all([
+        API.get(`/rescue/all-requests-user/${user.id}`),
+        API.get(`/rescue/active-requests-user/${user.id}`),
+        API.get(`/rescue/completed-requests-user/${user.id}`),
+      ]);
+
+      setRequests(allRes.data.data || []);
+      setStats({
+        activeRequests: activeRes.data.data?.number || 0,
+        completedRequests: completedRes.data.data?.number || 0,
+        totalRequests: allRes.data.data?.length || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    }
   };
 
   const handleQuickAction = (action) => {

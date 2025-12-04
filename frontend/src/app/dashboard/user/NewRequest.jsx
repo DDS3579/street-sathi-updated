@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import API from "@/services/api";
 import {
   Card,
   CardContent,
@@ -57,7 +58,7 @@ export default function NewRequest() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "qwen/qwen2.5-vl-32b-instruct:free",
+            model: "amazon/nova-2-lite-v1:free",
             messages: [
               {
                 role: "user",
@@ -181,6 +182,7 @@ export default function NewRequest() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(1);
 
     if (!animalType) {
       toast.error("Please select an animal type");
@@ -200,21 +202,40 @@ export default function NewRequest() {
     setIsSubmitting(true);
     const loadingToast = toast.loading("Submitting your request...");
 
-    setTimeout(() => {
+    try {
+      console.log(2)
+      const formData = new FormData();
+      formData.append("image", selectedImage);
+      formData.append("animalType", animalType);
+      formData.append("urgencyState", "Major");
+      formData.append("lat", location.lat);
+      formData.append("long", location.lng);
+      formData.append("severity", "Medium"); 
+      formData.append("description", description);
+      console.log(69);
+      console.log(formData);
+
+      const response = await API.post("/rescue/create", formData);
+      console.log(response);
+      console.log(4);
       toast.success("Request submitted!", {
         id: loadingToast,
         description: "Help is on the way for the animal",
         duration: 3000,
       });
 
+      // Reset form
       setSelectedImage(null);
       setImagePreview(null);
       setAnimalType("");
       setDescription("");
       setLocation({ lat: null, lng: null });
       setLocationText("");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to submit request");
+    } finally {
       setIsSubmitting(false);
-    }, 2500);
+    }
   };
 
   return (
