@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 145 30% 98%;
+    --foreground: 160 10% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 160 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 10% 15%;
+
+    --primary: 161 67% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 160 40% 94%;
+    --secondary-foreground: 161 67% 25%;
+
+    --muted: 160 25% 95%;
+    --muted-foreground: 160 10% 45%;
+
+    --accent: 161 50% 92%;
+    --accent-foreground: 161 67% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 160 25% 88%;
+    --input: 160 20% 90%;
+    --ring: 161 67% 33%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 161 67% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 30% 96%;
+    --sidebar-accent-foreground: 161 67% 25%;
+    --sidebar-border: 160 20% 90%;
+    --sidebar-ring: 161 67% 33%;
+  }
+
+  .dark {
+    --background: 160 20% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 160 20% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 160 20% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 161 67% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 160 20% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 160 20% 15%;
+    --muted-foreground: 160 10% 65%;
+
+    --accent: 160 20% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 160 20% 18%;
+    --input: 160 20% 18%;
+    --ring: 161 67% 40%;
+
+    --sidebar-background: 160 20% 8%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 161 67% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 160 20% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 160 20% 18%;
+    --sidebar-ring: 161 67% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    cursor: none;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  a, button, [role="button"] {
+    cursor: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animated-bg {
+    background: linear-gradient(
+      135deg,
+      hsl(145 30% 98%) 0%,
+      hsl(160 40% 96%) 25%,
+      hsl(161 50% 95%) 50%,
+      hsl(160 40% 96%) 75%,
+      hsl(145 30% 98%) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  .animated-bg-alt {
+    background: linear-gradient(
+      135deg,
+      hsl(160 40% 94%) 0%,
+      hsl(161 50% 92%) 50%,
+      hsl(160 40% 94%) 100%
+    );
+    background-size: 200% 200%;
+    animation: gradient-shift 10s ease infinite;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
